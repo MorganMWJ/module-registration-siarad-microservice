@@ -1,0 +1,1 @@
+curl -k -F 'data=@C:/Users/Morgan/source/repos/ModuleRegistration/staff.csv' https://localhost:44336/api/data/staff/AB0/2020

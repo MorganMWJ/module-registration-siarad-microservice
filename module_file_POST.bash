@@ -1,0 +1,1 @@
+curl -k -F 'data=@C:/Users/Morgan/source/repos/ModuleRegistration/modules.csv' https://localhost:44336/api/data/modules
