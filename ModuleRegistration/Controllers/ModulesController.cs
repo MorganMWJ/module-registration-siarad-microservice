@@ -26,11 +26,49 @@ namespace ModuleRegistration.Controllers
         }
 
         /**
+         * Gets all modules for a specific user
+         */
+        // GET api/modules/user/{uid}
+        [HttpGet("user/{uid}")]
+        public async Task<ActionResult<IEnumerable<Module>>> GetModulesByUser(string uid)
+        {
+            if (uid == null)
+            {
+                return NotFound();
+            }
+
+            /* Collection to return */
+            List<Module> userModules = new List<Module>();
+
+            /* Add all modules for a student */
+            var moduleStudents = await _context.ModuleStudents.Include(ms => ms.Module).Include(ms => ms.Student).ToListAsync();
+            foreach (ModuleStudent ms in moduleStudents)
+            {
+                if (ms.Student.Uid.Equals(uid))
+                {
+                    userModules.Add(ms.Module);
+                }
+            }
+
+            /* Add all modules for a staff member */
+            var moduleStaff = await _context.ModuleStaff.Include(ms => ms.Module).Include(ms => ms.Staff).ToListAsync();
+            foreach (ModuleStaff ms in moduleStaff)
+            {
+                if (ms.Staff.Uid.Equals(uid))
+                {
+                    userModules.Add(ms.Module);
+                }
+            }
+
+            return Ok(userModules);
+        }
+
+        /**
          * Gets all modules for a specific year
          */
         // GET api/modules/year/{year}
         [HttpGet("year/{year}")]
-        public ActionResult<Module> GetModulesByYear(String year)
+        public ActionResult<IEnumerable<Module>> GetModulesByYear(String year)
         {
             if (year == null)
             {
@@ -48,10 +86,10 @@ namespace ModuleRegistration.Controllers
          * Gets the registered students for a specific module
          */
         // GET api/modules/{id}/students
-        [HttpGet("{module_id}/students")]
-        public ActionResult<IEnumerable<Student>> GetStudentsByModule(int module_id)
+        [HttpGet("{id}/students")]
+        public ActionResult<IEnumerable<Student>> GetStudentsByModule(int id)
         {        
-            var module = _context.Modules.Where(m => m.Id.Equals(module_id)).Include(m => m.ModuleStudents).ThenInclude(ms => ms.Student).ToList();
+            var module = _context.Modules.Where(m => m.Id.Equals(id)).Include(m => m.ModuleStudents).ThenInclude(ms => ms.Student).ToList();
             if (module == null)
             {
                 return NotFound();
@@ -67,7 +105,30 @@ namespace ModuleRegistration.Controllers
         }
 
         /**
-         * Gets all the data within modules
+         * Gets the staff for a specific module
+         */
+        // GET api/modules/{id}/staff
+        [HttpGet("{id}/staff")]
+        public ActionResult<IEnumerable<Student>> GetStaffByModule(int id)
+        {
+            var module = _context.Modules.Where(m => m.Id.Equals(id)).Include(m => m.ModuleStaff).ThenInclude(ms => ms.Staff).ToList();
+            if (module == null)
+            {
+                return NotFound();
+            }
+
+            /* Get registered staff from module */
+            List<Staff> staff = new List<Staff>();
+            foreach (var moduleStaff in module.ElementAt(0).ModuleStaff)
+            {
+                staff.Add(moduleStaff.Staff);
+            }
+
+            return Ok(staff);
+        }
+
+        /**
+         * Gets all Modules.
          */
         // GET api/modules
         [HttpGet]
@@ -121,7 +182,7 @@ namespace ModuleRegistration.Controllers
          */
          //Get api/modules/year/{year}/code/{code}
         [HttpGet("year/{year}/code/{code}")]
-        public ActionResult<string> GetSpecificModuleForSpecificYear(String year, String code)
+        public ActionResult<Module> GetSpecificModuleForSpecificYear(String year, String code)
         {
             if (year == null || code == null)
             {

@@ -14,5 +14,7 @@ namespace ModuleRegistration.Data
         public DbSet<Module> Modules { get; set; }
         public DbSet<Student> Students { get; set; }
         public DbSet<Staff> Staff { get; set; }
+        public DbSet<ModuleStudent> ModuleStudents { get; set; }
+        public DbSet<ModuleStaff> ModuleStaff { get; set; }
     }
 }
