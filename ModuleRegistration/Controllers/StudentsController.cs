@@ -11,33 +11,33 @@ namespace ModuleRegistration.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StaffController : ControllerBase
+    public class StudentsController : ControllerBase
     {
         private readonly ModuleRegistrationContext _context;
 
-        public StaffController(ModuleRegistrationContext context)
+        public StudentsController(ModuleRegistrationContext context)
         {
             _context = context;
         }
 
         /**
-         * Returns all Staff entities.
-         */
+        * Returns all student entities.
+        */
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Staff>>> GetAllStaffMembers()
+        public async Task<ActionResult<IEnumerable<Student>>> GetAllRegisteredStudents()
         {
-            return Ok(await _context.Staff.ToListAsync());
+            return Ok(await _context.Students.ToListAsync());
         }
 
         /**
-         *  Return a list of all staff uids.
+         *  Return a list of all student uids.
          */
         [HttpGet("uids")]
-        public async Task<ActionResult<IEnumerable<string>>> GetAllStaffUids()
-        {
+        public async Task<ActionResult<IEnumerable<string>>> GetAllStudentUids()
+        {            
             List<String> uids = new List<String>();
-            var staff = await _context.Staff.ToListAsync();
-            foreach (Staff s in staff)
+            var students = await _context.Students.ToListAsync();
+            foreach(Student s in students)
             {
                 uids.Add(s.Uid);
             }

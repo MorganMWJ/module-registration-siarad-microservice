@@ -71,18 +71,31 @@ namespace ModuleRegistration.Controllers
          */
         // GET api/modules
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Module>>> Get()
+        public async Task<ActionResult<IEnumerable<Module>>> GetAllModules()
         {
             return Ok(await _context.Modules.ToListAsync());
         }
 
+        /**
+         * Get Module by ID.
+         */
+        [HttpGet("{id}")]
+        public async Task<ActionResult<Module>> GetModuleById(int id)
+        {
+            var module = await _context.Modules.FirstOrDefaultAsync(m => m.Id.Equals(id));
+            if (module == null)
+            {
+                return NotFound();
+            }
+            return Ok(module);
+        }
 
         /**
          * Returns a list of modules from a given year that is associated with a specific user.
          */
         // GET api/modules/year/{year}/{uid}
         [HttpGet("year/{year}/{uid}")]
-        public ActionResult<string> GetModulesByYearAndUser(String year, String uid)
+        public ActionResult<IEnumerable<Module>> GetModulesByYearAndUser(String year, String uid)
         {
             if (year == null || uid == null)
             {
@@ -121,20 +134,6 @@ namespace ModuleRegistration.Controllers
             }
             return Ok(specificModule);
         }
-
-        // POST year/{year}/{module} - THIS METHOD IS REDUNDANT ONE BELOW IS EQUIVALENT - REMOVE????
-        //[HttpPost("year/{year}/{module_id}")]
-        //public async Task<ActionResult<Module>> PostToSpecificYear([FromBody] Module module, string year, String code)
-        //{
-        //    var mod = await _context.Modules.FirstOrDefaultAsync(m => m.Id.Equals(code) && m.Year.Equals(year));
-        //    if (mod != null)
-        //    {
-        //        return BadRequest();
-        //    }
-        //    _context.Add(module);
-        //    await _context.SaveChangesAsync();
-        //    return Ok(await _context.Modules.ToListAsync());
-        //}
 
         /**
          * Create a new module.
