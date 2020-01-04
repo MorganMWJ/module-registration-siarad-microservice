@@ -1,0 +1,5 @@
+#!/bin/sh
+docker stop mr-mwj7
+docker rm mr-mwj7
+docker build -t module_registration ../ModuleRegistration
+docker run -d --name mr-mwj7 -p 8100:80 module_registration
