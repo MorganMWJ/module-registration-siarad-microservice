@@ -30,6 +30,7 @@ namespace ModuleRegistration
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
             services.AddEntityFrameworkNpgsql().AddDbContext<ModuleRegistrationContext>(option =>
             option.UseNpgsql(Configuration.GetConnectionString("ModuleRegistrationConnection")));
+            services.AddScoped<IDataRepository, DataRepository>();
             services.AddLogging();
         }
 

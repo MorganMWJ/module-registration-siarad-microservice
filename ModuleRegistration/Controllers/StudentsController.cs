@@ -13,11 +13,11 @@ namespace ModuleRegistration.Controllers
     [ApiController]
     public class StudentsController : ControllerBase
     {
-        private readonly ModuleRegistrationContext _context;
+        private readonly IDataRepository _repo;
 
-        public StudentsController(ModuleRegistrationContext context)
+        public StudentsController(IDataRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         /**
@@ -26,7 +26,7 @@ namespace ModuleRegistration.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Student>>> GetAllRegisteredStudents()
         {
-            return Ok(await _context.Students.ToListAsync());
+            return Ok(await _repo.StudentListAsync());
         }
 
         /**
@@ -36,7 +36,7 @@ namespace ModuleRegistration.Controllers
         public async Task<ActionResult<IEnumerable<string>>> GetAllStudentUids()
         {            
             List<String> uids = new List<String>();
-            var students = await _context.Students.ToListAsync();
+            var students = await _repo.StudentListAsync();
             foreach(Student s in students)
             {
                 uids.Add(s.Uid);

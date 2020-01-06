@@ -13,11 +13,11 @@ namespace ModuleRegistration.Controllers
     [ApiController]
     public class StaffController : ControllerBase
     {
-        private readonly ModuleRegistrationContext _context;
+        private readonly IDataRepository _repo;
 
-        public StaffController(ModuleRegistrationContext context)
+        public StaffController(IDataRepository repo)
         {
-            _context = context;
+            _repo = repo;
         }
 
         /**
@@ -26,7 +26,7 @@ namespace ModuleRegistration.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Staff>>> GetAllStaffMembers()
         {
-            return Ok(await _context.Staff.ToListAsync());
+            return Ok(await _repo.StaffListAsync());
         }
 
         /**
@@ -36,7 +36,7 @@ namespace ModuleRegistration.Controllers
         public async Task<ActionResult<IEnumerable<string>>> GetAllStaffUids()
         {
             List<String> uids = new List<String>();
-            var staff = await _context.Staff.ToListAsync();
+            var staff = await _repo.StaffListAsync();
             foreach (Staff s in staff)
             {
                 uids.Add(s.Uid);

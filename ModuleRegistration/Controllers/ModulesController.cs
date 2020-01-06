@@ -18,11 +18,11 @@ namespace ModuleRegistration.Controllers
     [ApiController]
     public class ModulesController : ControllerBase
     {
-        private readonly ModuleRegistrationContext _context;
+        private readonly IDataRepository _repo;
 
-        public ModulesController(ModuleRegistrationContext context)
+        public ModulesController(IDataRepository dataRepository)
         {
-            _context = context;
+            _repo = dataRepository;
         }
 
         /**
@@ -37,27 +37,12 @@ namespace ModuleRegistration.Controllers
                 return NotFound();
             }
 
-            /* Collection to return */
-            List<Module> userModules = new List<Module>();
+            var userModules = await _repo.ModulesByStudentListAsync(uid);
 
-            /* Add all modules for a student */
-            var moduleStudents = await _context.ModuleStudents.Include(ms => ms.Module).Include(ms => ms.Student).ToListAsync();
-            foreach (ModuleStudent ms in moduleStudents)
+            /* If user not student */
+            if(userModules.Count == 0)
             {
-                if (ms.Student.Uid.Equals(uid))
-                {
-                    userModules.Add(ms.Module);
-                }
-            }
-
-            /* Add all modules for a staff member */
-            var moduleStaff = await _context.ModuleStaff.Include(ms => ms.Module).Include(ms => ms.Staff).ToListAsync();
-            foreach (ModuleStaff ms in moduleStaff)
-            {
-                if (ms.Staff.Uid.Equals(uid))
-                {
-                    userModules.Add(ms.Module);
-                }
+                userModules = await _repo.ModulesByStaffListAsync(uid);
             }
 
             return Ok(userModules);
@@ -68,13 +53,13 @@ namespace ModuleRegistration.Controllers
          */
         // GET api/modules/year/{year}
         [HttpGet("year/{year}")]
-        public ActionResult<IEnumerable<Module>> GetModulesByYear(String year)
+        public async Task<ActionResult<IEnumerable<Module>>> GetModulesByYear(String year)
         {
             if (year == null)
             {
                 return NotFound();
             }
-            var moduleList = _context.Modules.Where(m => m.Year.Equals(year));
+            var moduleList = await _repo.ModulesByYearListAsync(year);
             if (moduleList == null)
             {
                 return NotFound();
@@ -87,19 +72,15 @@ namespace ModuleRegistration.Controllers
          */
         // GET api/modules/{id}/students
         [HttpGet("{id}/students")]
-        public ActionResult<IEnumerable<Student>> GetStudentsByModule(int id)
-        {        
-            var module = _context.Modules.Where(m => m.Id.Equals(id)).Include(m => m.ModuleStudents).ThenInclude(ms => ms.Student).ToList();
+        public async Task<ActionResult<IEnumerable<Student>>> GetStudentsByModule(int id)
+        {
+            var module = await _repo.GetModuleByIdAsync(id);
             if (module == null)
             {
                 return NotFound();
             }
 
-            /* Get registered students from module */
-            List<Student> students = new List<Student>();
-            foreach (var moduleStudent in module.ElementAt(0).ModuleStudents){
-                students.Add(moduleStudent.Student);
-            }
+            var students = await _repo.StudentsByModuleAsync(id);
 
             return Ok(students);
         }
@@ -109,20 +90,15 @@ namespace ModuleRegistration.Controllers
          */
         // GET api/modules/{id}/staff
         [HttpGet("{id}/staff")]
-        public ActionResult<IEnumerable<Student>> GetStaffByModule(int id)
+        public async Task<ActionResult<IEnumerable<Student>>> GetStaffByModule(int id)
         {
-            var module = _context.Modules.Where(m => m.Id.Equals(id)).Include(m => m.ModuleStaff).ThenInclude(ms => ms.Staff).ToList();
+            var module = await _repo.GetModuleByIdAsync(id);
             if (module == null)
             {
                 return NotFound();
             }
 
-            /* Get registered staff from module */
-            List<Staff> staff = new List<Staff>();
-            foreach (var moduleStaff in module.ElementAt(0).ModuleStaff)
-            {
-                staff.Add(moduleStaff.Staff);
-            }
+            var staff = await _repo.StaffByModuleAsync(id);
 
             return Ok(staff);
         }
@@ -134,7 +110,7 @@ namespace ModuleRegistration.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Module>>> GetAllModules()
         {
-            return Ok(await _context.Modules.ToListAsync());
+            return Ok(await _repo.ModuleListAsync());
         }
 
         /**
@@ -143,7 +119,7 @@ namespace ModuleRegistration.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Module>> GetModuleById(int id)
         {
-            var module = await _context.Modules.FirstOrDefaultAsync(m => m.Id.Equals(id));
+            var module = await _repo.GetModuleByIdAsync(id);
             if (module == null)
             {
                 return NotFound();
@@ -156,25 +132,16 @@ namespace ModuleRegistration.Controllers
          */
         // GET api/modules/year/{year}/{uid}
         [HttpGet("year/{year}/{uid}")]
-        public ActionResult<IEnumerable<Module>> GetModulesByYearAndUser(String year, String uid)
+        public async Task<ActionResult<IEnumerable<Module>>> GetModulesByYearAndUser(String year, String uid)
         {
             if (year == null || uid == null)
             {
                 return NotFound();
             }
-            List<Module> moduleByYearForUser = new List<Module>();
-            var modulesByYear = _context.Modules.Where(m => m.Year.Equals(year)).Include(m => m.ModuleStudents).ThenInclude(ms => ms.Student).ToList();
 
-            foreach (Module m in modulesByYear)
-            {
-                bool isUserOnModule = m.ModuleStudents.Where(ms => ms.Student.Uid.Equals(uid)).ToList().Count > 0;
-                if (isUserOnModule)
-                {
-                    moduleByYearForUser.Add(m);
-                }
-            }       
+            var modules = await _repo.ModulesByYearAndUserAsync(year, uid);
       
-            return Ok(moduleByYearForUser);
+            return Ok(modules);
         }
 
         /**
@@ -182,13 +149,13 @@ namespace ModuleRegistration.Controllers
          */
          //Get api/modules/year/{year}/code/{code}
         [HttpGet("year/{year}/code/{code}")]
-        public ActionResult<Module> GetSpecificModuleForSpecificYear(String year, String code)
+        public async Task<ActionResult<Module>> GetModulesByYearAndCode(String year, String code)
         {
             if (year == null || code == null)
             {
                 return NotFound();
             }
-            var specificModule = _context.Modules.Where(r => r.Year.Equals(year) && r.Code.Equals(code));
+            var specificModule = await _repo.GetModuleByYearAndCode(year, code);
             if (specificModule == null)
             {
                 return NotFound();
@@ -204,15 +171,14 @@ namespace ModuleRegistration.Controllers
         public async Task<ActionResult<IEnumerable<Module>>> CreateModule([FromBody]Module module)
         {
             /* Bad Request if module already exists */
-            var mod = await _context.Modules.FirstOrDefaultAsync(m => m.Id.Equals(module.Id));
+            var mod = await _repo.GetModuleByIdAsync(module.Id);
             if (mod != null)
             {
                 return BadRequest();
             }
 
-            _context.Add(module);
-            await _context.SaveChangesAsync();
-            return Ok(await _context.Modules.ToListAsync());
+            await _repo.AddModuleAsync(module);
+            return Ok(await _repo.ModuleListAsync());
         }
 
 
@@ -231,45 +197,38 @@ namespace ModuleRegistration.Controllers
             {
                 try
                 {
-                    _context.Update(module);
-                    await _context.SaveChangesAsync();
+                    await _repo.UpdateModuleAsync(module);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ModuleExists(module.Id))
+                    if (!_repo.ModuleExists(module.Id))
                     {
                         return BadRequest();
                     }
                     throw;
                 }
             }
-            return Ok(await _context.Modules.ToListAsync());
+            return Ok(await _repo.ModuleListAsync());
         }
 
         //DELETE api/modules/{id}
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteModule(int id)
-        {          
-            var module = await _context.Modules.FirstOrDefaultAsync(m => m.Id.Equals(id));
+        {
+            var module = await _repo.GetModuleByIdAsync(id);
             if (module == null)
             {
                 return NotFound();
             }
             try
             {
-                _context.Modules.Remove(module);
-                await _context.SaveChangesAsync();
+                await _repo.DeleteModuleAsync(module);
             }
             catch (DbUpdateConcurrencyException)
             {
                 return BadRequest();
             }
-            return Ok(await _context.Modules.ToListAsync());
-        }
-
-        private bool ModuleExists(int id)
-        {
-            return _context.Modules.Any(m => m.Id.Equals(id));
+            return Ok(await _repo.ModuleListAsync());
         }
     }
 }
