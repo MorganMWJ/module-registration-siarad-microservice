@@ -6,6 +6,7 @@ using ModuleRegistration.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace ModuleRegistration.Controllers
@@ -55,15 +56,18 @@ namespace ModuleRegistration.Controllers
         [HttpGet("year/{year}")]
         public async Task<ActionResult<IEnumerable<Module>>> GetModulesByYear(String year)
         {
+            /* Regular Expression to match year between 1900-2099 */
+            string pattern = @"^(19|20)\d{2}$";
+            Regex rg = new Regex(pattern);
             if (year == null)
             {
                 return NotFound();
             }
-            var moduleList = await _repo.ModulesByYearListAsync(year);
-            if (moduleList == null)
+            if (!rg.IsMatch(year))
             {
-                return NotFound();
+                return BadRequest();
             }
+            var moduleList = await _repo.ModulesByYearListAsync(year);
             return Ok(moduleList);
         }
 

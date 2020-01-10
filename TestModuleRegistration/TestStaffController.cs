@@ -23,6 +23,14 @@ namespace TestModuleRegistration
 
             var staff = okResult.Value as List<Staff>;
             Assert.AreEqual(2, staff.Count);
+
+            Assert.AreEqual("nst", staff[0].Uid);
+            Assert.AreEqual("Neil", staff[0].Forename);
+            Assert.AreEqual("Taylor", staff[0].Surname);
+
+            Assert.AreEqual("nwh", staff[1].Uid);
+            Assert.IsNull(staff[1].Forename);
+            Assert.IsNull(staff[1].Surname);
         }
 
         [TestMethod]
@@ -41,5 +49,6 @@ namespace TestModuleRegistration
             Assert.AreEqual("nst", uids[0]);
             Assert.AreEqual("nwh", uids[1]);
         }
+
     }
 }

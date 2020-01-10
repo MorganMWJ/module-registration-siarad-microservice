@@ -83,9 +83,14 @@ namespace ModuleRegistration.Data
             throw new NotImplementedException();
         }
 
-        public Task<List<Module>> ModulesByYearListAsync(string year)
+        public async Task<List<Module>> ModulesByYearListAsync(string year)
         {
-            throw new NotImplementedException();
+            List<Module> modules = new List<Module>();
+
+            modules.Add(new Module() { Code = "SEM5640", Year = "2020", ClassCode = "AB0", CoordinatorUid = "nst", Title = "Developing Advanced Internet Based-Applications" });
+            modules.Add(new Module() { Code = "CSM1620", Year = "2020", ClassCode = "AB0", CoordinatorUid = "tjn2", Title = "Fundamentals of Intelligent Systems" });
+
+            return modules;
         }
 
         public Task<List<Staff>> StaffByModuleAsync(int moduleId)
@@ -113,9 +118,14 @@ namespace ModuleRegistration.Data
             throw new NotImplementedException();
         }
 
-        public Task<List<Student>> StudentListAsync()
+        public async Task<List<Student>> StudentListAsync()
         {
-            throw new NotImplementedException();
+            List<Student> students = new List<Student>();
+
+            students.Add(new Student() { Uid = "mwj7", Forename = "Morgan", Surname = "Jones" });
+            students.Add(new Student() { Uid = "dop2", Forename = "Dominic", Surname = "Parr" });
+
+            return students;
         }
 
         public Task<List<Student>> StudentsByModuleAsync(int moduleId)
