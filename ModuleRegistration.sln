@@ -3,7 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 16
 VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ModuleRegistration", "ModuleRegistration\ModuleRegistration.csproj", "{87E707AD-0488-45AB-A507-38130B9CE0B0}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ModuleRegistration", "ModuleRegistration\ModuleRegistration.csproj", "{87E707AD-0488-45AB-A507-38130B9CE0B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestModuleRegistration", "TestModuleRegistration\TestModuleRegistration.csproj", "{927B4C1A-2C4A-438F-A8EF-9D9A68D9A7F4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +17,10 @@ Global
 		{87E707AD-0488-45AB-A507-38130B9CE0B0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{87E707AD-0488-45AB-A507-38130B9CE0B0}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{87E707AD-0488-45AB-A507-38130B9CE0B0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{927B4C1A-2C4A-438F-A8EF-9D9A68D9A7F4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{927B4C1A-2C4A-438F-A8EF-9D9A68D9A7F4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{927B4C1A-2C4A-438F-A8EF-9D9A68D9A7F4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{927B4C1A-2C4A-438F-A8EF-9D9A68D9A7F4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
