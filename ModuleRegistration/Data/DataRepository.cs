@@ -116,7 +116,7 @@ namespace ModuleRegistration.Data
             return _context.Modules.Any(m => m.Code.Equals(code) && m.Year.Equals(year) && m.ClassCode.Equals(classCode));
         }
 
-        public async Task<List<Module>> ModulesByYearAndUserAsync(string year, string uid)
+        public async Task<List<Module>> ModulesByYearAndStudent(string year, string uid)
         {
             /* collection to return */
             List<Module> moduleByYearForUser = new List<Module>();
@@ -126,6 +126,25 @@ namespace ModuleRegistration.Data
             foreach (Module m in modulesByYear)
             {
                 bool isUserOnModule = m.ModuleStudents.Where(ms => ms.Student.Uid.Equals(uid)).ToList().Count > 0;
+                if (isUserOnModule)
+                {
+                    moduleByYearForUser.Add(m);
+                }
+            }
+
+            return moduleByYearForUser;
+        }
+
+        public async Task<List<Module>> ModulesByYearAndStaff(string year, string uid)
+        {
+            /* collection to return */
+            List<Module> moduleByYearForUser = new List<Module>();
+
+            var modulesByYear = await _context.Modules.Where(m => m.Year.Equals(year)).Include(m => m.ModuleStaff).ThenInclude(ms => ms.Staff).ToListAsync();
+
+            foreach (Module m in modulesByYear)
+            {
+                bool isUserOnModule = m.ModuleStaff.Where(ms => ms.Staff.Uid.Equals(uid)).ToList().Count > 0;
                 if (isUserOnModule)
                 {
                     moduleByYearForUser.Add(m);

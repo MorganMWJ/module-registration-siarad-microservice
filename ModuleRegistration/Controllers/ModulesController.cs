@@ -143,7 +143,19 @@ namespace ModuleRegistration.Controllers
                 return NotFound();
             }
 
-            var modules = await _repo.ModulesByYearAndUserAsync(year, uid);
+            IEnumerable<Module> modules = new List<Module>();
+            if (_repo.StaffExists(uid))
+            {
+                modules = await _repo.ModulesByYearAndStaff(year, uid);
+            }
+            else if (_repo.StudentExists(uid))
+            {
+                modules = await _repo.ModulesByYearAndStudent(year, uid);
+            }
+            else
+            {
+                return NotFound("User not found");
+            }            
       
             return Ok(modules);
         }

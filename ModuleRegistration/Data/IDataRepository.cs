@@ -18,7 +18,8 @@ namespace ModuleRegistration.Data
         Task<List<Module>> ModulesByStudentListAsync(string uid);
         Task<List<Module>> ModulesByStaffListAsync(string uid);
         Task<List<Module>> ModulesByYearListAsync(string year);
-        Task<List<Module>> ModulesByYearAndUserAsync(string year, string uid);
+        Task<List<Module>> ModulesByYearAndStudent(string year, string uid);
+        Task<List<Module>> ModulesByYearAndStaff(string year, string uid);
         Task<List<Student>> StudentListAsync();
         Task<List<Student>> StudentsByModuleAsync(int moduleId);
         Task<List<Staff>> StaffListAsync();
