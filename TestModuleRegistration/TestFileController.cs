@@ -26,7 +26,7 @@ namespace TestModuleRegistration
             Assert.IsInstanceOfType(result, typeof(BadRequestResult));
 
             string responseStr = result.ToString();
-
+            //Assert.AreEqual();
         }
     }
 }

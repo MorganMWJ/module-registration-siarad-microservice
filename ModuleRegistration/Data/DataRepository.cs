@@ -32,6 +32,24 @@ namespace ModuleRegistration.Data
             throw new NotImplementedException();
         }
 
+        public async Task AddModulesAsync(List<Module> modules)
+        {
+            _context.Modules.AddRange(modules);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddModuleStudentAsync(List<ModuleStudent> moduleStudents)
+        {
+            _context.ModuleStudents.AddRange(moduleStudents);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddModuleStaffAsync(List<ModuleStaff> moduleStaff)
+        {
+            _context.ModuleStaff.AddRange(moduleStaff);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteModuleAsync(Module module)
         {
             _context.Modules.Remove(module);
@@ -48,24 +66,30 @@ namespace ModuleRegistration.Data
             throw new NotImplementedException();
         }
 
-        public async Task<Module> GetModuleByIdAsync(int id)
+        public async Task<Module> GetModuleAsync(int id)
         {
             return await _context.Modules.FirstOrDefaultAsync(m => m.Id.Equals(id));
         }
 
-        public async Task<Module> GetModuleByYearAndCode(string year, string code)
+        public async Task<Module> GetModuleAsync(string year, string code)
         {
-            var modules = await ModuleListAsync();
-            var module = modules.FirstOrDefault(r => r.Year.Equals(year) && r.Code.Equals(code));
+            var module = await _context.Modules.FirstOrDefaultAsync(m => m.Year.Equals(year) && m.Code.Equals(code));
             return module;
         }
 
-        public async Task<Staff> GetStaffByUidAsync(string uid)
+        public async Task<Module> GetModuleAsync(string code, string year, string classCode)
+        {
+            var module = await _context.Modules.FirstOrDefaultAsync(m => m.Code.Equals(code) 
+            && m.Year.Equals(year) && m.Code.Equals(classCode));
+            return module;
+        }
+
+        public async Task<Staff> GetStaffAsync(string uid)
         {
             return await _context.Staff.FirstOrDefaultAsync(s => s.Uid.Equals(uid));
         }
 
-        public async Task<Student> GetStudentByUidAsync(string uid)
+        public async Task<Student> GetStudentAsync(string uid)
         {
             return await _context.Students.FirstOrDefaultAsync(s => s.Uid.Equals(uid));
         }
@@ -73,6 +97,11 @@ namespace ModuleRegistration.Data
         public bool ModuleExists(int id)
         {
             return _context.Modules.Any(m => m.Id.Equals(id));
+        }
+
+        public bool ModuleExists(string code, string year, string classCode)
+        {
+            return _context.Modules.Any(m => m.Code.Equals(code) && m.Year.Equals(year) && m.ClassCode.Equals(classCode));
         }
 
         public async Task<List<Module>> ModulesByYearAndUserAsync(string year, string uid)
@@ -137,7 +166,7 @@ namespace ModuleRegistration.Data
 
         public bool StaffExists(string uid)
         {
-            throw new NotImplementedException();
+            return _context.Staff.Any(s => s.Uid.Equals(uid));
         }
 
         public async Task<List<Staff>> StaffListAsync()
@@ -164,7 +193,7 @@ namespace ModuleRegistration.Data
 
         public bool StudentExists(string uid)
         {
-            throw new NotImplementedException();
+            return _context.Students.Any(s => s.Uid.Equals(uid));
         }
 
         public async Task<List<Student>> StudentListAsync()

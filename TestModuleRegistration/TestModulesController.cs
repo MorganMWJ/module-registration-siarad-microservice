@@ -149,7 +149,7 @@ namespace TestModuleRegistration
             studentData.Add(new Student() { Uid = "dop2", Forename = "Dominic", Surname = "Parr" });
 
             var mockRepo = new Mock<IDataRepository>();
-            mockRepo.Setup(repo => repo.GetModuleByIdAsync(module.Id)).
+            mockRepo.Setup(repo => repo.GetModuleAsync(module.Id)).
                 ReturnsAsync(module);
             mockRepo.Setup(repo => repo.StudentsByModuleAsync(module.Id)).
                 ReturnsAsync(studentData);
@@ -180,7 +180,7 @@ namespace TestModuleRegistration
             Module module = new Module() { Id= 3, Code = "SEM5640", Year = "2020", ClassCode = "AB0", CoordinatorUid = "nst", Title = "Developing Advanced Internet Based-Applications" };
             List<Student> studentData = new List<Student>();
             var mockRepo = new Mock<IDataRepository>();
-            mockRepo.Setup(repo => repo.GetModuleByIdAsync(module.Id)).
+            mockRepo.Setup(repo => repo.GetModuleAsync(module.Id)).
                ReturnsAsync(module);
             mockRepo.Setup(repo => repo.StudentsByModuleAsync(module.Id)).
                 ReturnsAsync(studentData);
@@ -201,7 +201,7 @@ namespace TestModuleRegistration
         {
             int id = 3;
             var mockRepo = new Mock<IDataRepository>();
-            mockRepo.Setup(repo => repo.GetModuleByIdAsync(id)).
+            mockRepo.Setup(repo => repo.GetModuleAsync(id)).
                 ReturnsAsync((Module)null);
 
             ModulesController controller = new ModulesController(mockRepo.Object);
@@ -237,7 +237,7 @@ namespace TestModuleRegistration
         {
             int id = 56;
             var mockRepo = new Mock<IDataRepository>();
-            mockRepo.Setup(repo => repo.GetModuleByIdAsync(id)).
+            mockRepo.Setup(repo => repo.GetModuleAsync(id)).
                 ReturnsAsync((Module)null);
 
             ModulesController controller = new ModulesController(mockRepo.Object);
@@ -252,7 +252,7 @@ namespace TestModuleRegistration
             var module = new Module() { Id = 5, Code = "SEM5640", Year = "2020", ClassCode = "AB0", CoordinatorUid = "nst", Title = "Developing Advanced Internet Based-Applications" };
 
             var mockRepo = new Mock<IDataRepository>();
-            mockRepo.Setup(repo => repo.GetModuleByIdAsync(module.Id)).
+            mockRepo.Setup(repo => repo.GetModuleAsync(module.Id)).
                 ReturnsAsync(module);
 
             ModulesController controller = new ModulesController(mockRepo.Object);

@@ -78,7 +78,7 @@ namespace ModuleRegistration.Controllers
         [HttpGet("{id}/students")]
         public async Task<ActionResult<IEnumerable<Student>>> GetStudentsByModule(int id)
         {
-            var module = await _repo.GetModuleByIdAsync(id);
+            var module = await _repo.GetModuleAsync(id);
             if (module == null)
             {
                 return NotFound();
@@ -96,7 +96,7 @@ namespace ModuleRegistration.Controllers
         [HttpGet("{id}/staff")]
         public async Task<ActionResult<IEnumerable<Student>>> GetStaffByModule(int id)
         {
-            var module = await _repo.GetModuleByIdAsync(id);
+            var module = await _repo.GetModuleAsync(id);
             if (module == null)
             {
                 return NotFound();
@@ -123,7 +123,7 @@ namespace ModuleRegistration.Controllers
         [HttpGet("{id}")]
         public async Task<ActionResult<Module>> GetModuleById(int id)
         {
-            var module = await _repo.GetModuleByIdAsync(id);
+            var module = await _repo.GetModuleAsync(id);
             if (module == null)
             {
                 return NotFound();
@@ -159,7 +159,7 @@ namespace ModuleRegistration.Controllers
             {
                 return NotFound();
             }
-            var specificModule = await _repo.GetModuleByYearAndCode(year, code);
+            var specificModule = await _repo.GetModuleAsync(year, code);
             if (specificModule == null)
             {
                 return NotFound();
@@ -175,7 +175,7 @@ namespace ModuleRegistration.Controllers
         public async Task<ActionResult<IEnumerable<Module>>> CreateModule([FromBody]Module module)
         {
             /* Bad Request if module already exists */
-            var mod = await _repo.GetModuleByIdAsync(module.Id);
+            var mod = await _repo.GetModuleAsync(module.Id);
             if (mod != null)
             {
                 return BadRequest();
@@ -219,7 +219,7 @@ namespace ModuleRegistration.Controllers
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteModule(int id)
         {
-            var module = await _repo.GetModuleByIdAsync(id);
+            var module = await _repo.GetModuleAsync(id);
             if (module == null)
             {
                 return NotFound();

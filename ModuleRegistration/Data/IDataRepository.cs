@@ -8,10 +8,11 @@ namespace ModuleRegistration.Data
 {
     public interface IDataRepository
     {
-        Task<Module> GetModuleByIdAsync(int id);
-        Task<Module> GetModuleByYearAndCode(string year, string code);
-        Task<Student> GetStudentByUidAsync(string uid);
-        Task<Staff> GetStaffByUidAsync(string uid);
+        Task<Module> GetModuleAsync(int id);
+        Task<Module> GetModuleAsync(string year, string code);
+        Task<Module> GetModuleAsync(string code, string year, string classCode);
+        Task<Student> GetStudentAsync(string uid);
+        Task<Staff> GetStaffAsync(string uid);
 
         Task<List<Module>> ModuleListAsync();
         Task<List<Module>> ModulesByStudentListAsync(string uid);
@@ -27,6 +28,10 @@ namespace ModuleRegistration.Data
         Task AddStudentAsync(Student student);
         Task AddStaffAsync(Staff staff);
 
+        Task AddModulesAsync(List<Module> modules);
+        Task AddModuleStudentAsync(List<ModuleStudent> moduleStudents);
+        Task AddModuleStaffAsync(List<ModuleStaff> moduleStaff);
+
         Task UpdateModuleAsync(Module module);
         Task UpdateStudentAsync(Student student);
         Task UpdateStaffAsync(Staff staff);
@@ -36,6 +41,7 @@ namespace ModuleRegistration.Data
         Task DeleteStaffAsync(string uid);
 
         bool ModuleExists(int id);
+        bool ModuleExists(string code, string year, string classCode);
         bool StaffExists(string uid);
         bool StudentExists(string uid);
 
