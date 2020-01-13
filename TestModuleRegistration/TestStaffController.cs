@@ -3,6 +3,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ModuleRegistration.Controllers;
 using ModuleRegistration.Data;
 using ModuleRegistration.Models;
+using Moq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -13,9 +14,12 @@ namespace TestModuleRegistration
     {
         [TestMethod]
         public async Task ShouldListAllStaff()
-        {            
-            IDataRepository mockRepo = new MockRepository();
-            StaffController controller = new StaffController(mockRepo);
+        {
+            var mockRepo = new Mock<IDataRepository>();
+            mockRepo.Setup(repo => repo.StaffListAsync()).
+                ReturnsAsync(GetStaffData());
+
+            StaffController controller = new StaffController(mockRepo.Object);
             var result = await controller.GetAllStaffMembers();
 
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -36,8 +40,11 @@ namespace TestModuleRegistration
         [TestMethod]
         public async Task ShouldListAllStaffUids()
         {
-            IDataRepository mockRepo = new MockRepository();
-            StaffController controller = new StaffController(mockRepo);
+            var mockRepo = new Mock<IDataRepository>();
+            mockRepo.Setup(repo => repo.StaffListAsync()).
+                ReturnsAsync(GetStaffData());
+
+            StaffController controller = new StaffController(mockRepo.Object);
             var result = await controller.GetAllStaffUids();
 
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -50,5 +57,14 @@ namespace TestModuleRegistration
             Assert.AreEqual("nwh", uids[1]);
         }
 
+        private List<Staff> GetStaffData()
+        {
+            List<Staff> staff = new List<Staff>();
+
+            staff.Add(new Staff() { Uid = "nst", Forename = "Neil", Surname = "Taylor" });
+            staff.Add(new Staff() { Uid = "nwh" });
+
+            return staff;
+        }
     }
 }

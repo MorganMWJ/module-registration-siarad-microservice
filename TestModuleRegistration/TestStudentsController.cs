@@ -7,6 +7,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using ModuleRegistration.Controllers;
 using ModuleRegistration.Data;
 using ModuleRegistration.Models;
+using Moq;
 
 namespace TestModuleRegistration
 {
@@ -16,8 +17,11 @@ namespace TestModuleRegistration
         [TestMethod]
         public async Task ShouldListAllStudents()
         {
-            IDataRepository mockRepo = new MockRepository();
-            StudentsController controller = new StudentsController(mockRepo);
+            var mockRepo = new Mock<IDataRepository>();
+            mockRepo.Setup(repo => repo.StudentListAsync()).
+                ReturnsAsync(GetStudentData());
+
+            StudentsController controller = new StudentsController(mockRepo.Object);
             var result = await controller.GetAllRegisteredStudents();
 
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -39,8 +43,11 @@ namespace TestModuleRegistration
         [TestMethod]
         public async Task ShouldListAllStudentUids()
         {
-            IDataRepository mockRepo = new MockRepository();
-            StudentsController controller = new StudentsController(mockRepo);
+            var mockRepo = new Mock<IDataRepository>();
+            mockRepo.Setup(repo => repo.StudentListAsync()).
+                ReturnsAsync(GetStudentData());
+
+            StudentsController controller = new StudentsController(mockRepo.Object);
             var result = await controller.GetAllStudentUids();
 
             Assert.IsInstanceOfType(result.Result, typeof(OkObjectResult));
@@ -51,6 +58,16 @@ namespace TestModuleRegistration
 
             Assert.AreEqual("mwj7", uids[0]);
             Assert.AreEqual("dop2", uids[1]);
+        }
+
+        private List<Student> GetStudentData()
+        {
+            List<Student> students = new List<Student>();
+
+            students.Add(new Student() { Uid = "mwj7", Forename = "Morgan", Surname = "Jones" });
+            students.Add(new Student() { Uid = "dop2", Forename = "Dominic", Surname = "Parr" });
+
+            return students;
         }
     }
 }

@@ -38,5 +38,9 @@ namespace ModuleRegistration.Data
         bool ModuleExists(int id);
         bool StaffExists(string uid);
         bool StudentExists(string uid);
+
+        Task EmptyModuleData();
+        Task EmptyStudentData();
+        Task EmptyStaffData();
     }
 }

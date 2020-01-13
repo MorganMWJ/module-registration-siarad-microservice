@@ -18,12 +18,12 @@ namespace ModuleRegistration.Controllers
     [ApiController]
     public class FileController : ControllerBase
     {
-        private readonly ModuleRegistrationContext _context;
+        private readonly IDataRepository _repo;
         private readonly ILogger<FileController> _logger;
 
-        public FileController(ModuleRegistrationContext context, ILogger<FileController> logger)
+        public FileController(IDataRepository context, ILogger<FileController> logger)
         {
-            _context = context;
+            _repo = context;
             _logger = logger;
         }
 
@@ -32,11 +32,11 @@ namespace ModuleRegistration.Controllers
          */
         //POST api/data/modules
         [HttpPost("modules")]
-        public async Task<ActionResult<Module>> PostCsvFile(IFormFile test)
+        public async Task<ActionResult> PostCsvFile(IFormFile test)
         {
-            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE module_student RESTART IDENTITY CASCADE");
-            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE module_staff RESTART IDENTITY CASCADE");
-            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE module RESTART IDENTITY CASCADE");
+            /* Truncate all previous module data */
+            await _repo.EmptyModuleData();
+
             var file = Request.Form.Files.First();
             StringBuilder content = new StringBuilder();
             StreamReader sr = new StreamReader(file.OpenReadStream());
@@ -92,14 +92,14 @@ namespace ModuleRegistration.Controllers
                     module.CoordinatorUid = coordinator_id;
 
                     /* Adds in module if it does not yet exist */
-                    bool moduleAlreadyExists = _context.Modules.Any(m => m.Code.Equals(module_id) && m.Year.Equals(year) && m.ClassCode.Equals(class_code));
+                    bool moduleAlreadyExists = _repo.Modules.Any(m => m.Code.Equals(module_id) && m.Year.Equals(year) && m.ClassCode.Equals(class_code));
                     if (!moduleAlreadyExists)
                     {
-                        //_context.Modules.Add(module);
+                        //_repo.Modules.Add(module);
                         /* Checks for pre-existing data prior to this request */
                         if (keySet.Any(r => r.Item1.Equals(year) && r.Item2.Equals(module_id) && r.Item3.Equals(class_code)) == false) //Checks for duplications during this request
                         {
-                            _context.Add(module);
+                            _repo.Add(module);
                             keySet.Add(new Tuple<String, String, String>(year, module_id, class_code));
                         }
                     }
@@ -111,7 +111,7 @@ namespace ModuleRegistration.Controllers
                     coordinator_id = "";
                 }
             }
-            await _context.SaveChangesAsync();
+            await _repo.SaveChangesAsync();
             return Ok();
         }
 
@@ -120,15 +120,15 @@ namespace ModuleRegistration.Controllers
         */
         //POST api/data/students
         [HttpPost("students/{class_code}")]
-        public async Task<ActionResult<Module>> PostStudentFile(String class_code)
+        public async Task<ActionResult> PostStudentFile(String class_code)
         {
             if (!class_code.Equals("AB0") && !class_code.Equals("MU0") && !class_code.Equals("EX1"))
             {
                 return BadRequest("Campus class code must be one of {AB0,MU0,EX1}");
             }
 
-            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE module_student RESTART IDENTITY CASCADE");
-            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE student RESTART IDENTITY CASCADE");
+            /* Truncate all previous student data */
+            await _repo.EmptyStudentData();
             
             var file = Request.Form.Files.First();
             StringBuilder content = new StringBuilder();
@@ -180,22 +180,22 @@ namespace ModuleRegistration.Controllers
                         student.Uid = user_id;
                         student.Forename = nameSplit[nameSplit.Length - 1];
                         student.Surname = nameSplit[0];
-                        if (_context.Students.Find(user_id) == null)
+                        if (_repo.Students.Find(user_id) == null)
                         {
                             if (!keySet.Contains(user_id))
                             {
-                                _context.Add(student);
+                                _repo.Add(student);
                                 keySet.Add(user_id);
                             }
                         }
 
                         /* Get module to associate student with */
-                        var module = _context.Modules.First(m => m.Code.Equals(module_code) && m.Year.Equals(year) && m.ClassCode.Equals(class_code));
+                        var module = _repo.Modules.First(m => m.Code.Equals(module_code) && m.Year.Equals(year) && m.ClassCode.Equals(class_code));
 
                         ModuleStudent ms = new ModuleStudent();
                         ms.Module = module;
                         ms.Student = student;
-                        _context.Add(ms);                        
+                        _repo.Add(ms);                        
                     }
                     catch (InvalidOperationException)
                     {
@@ -210,7 +210,7 @@ namespace ModuleRegistration.Controllers
                     name = "";
                 }
             }
-            await _context.SaveChangesAsync();
+            await _repo.SaveChangesAsync();
             return Ok();
         }
 
@@ -222,15 +222,15 @@ namespace ModuleRegistration.Controllers
         //Until Neil or Nigel sorts out the CSV file to contain year as a field, we'll take it manually
         //POST api/data/staff/{year}
         [HttpPost("staff/{class_code}/{year}")]
-        public async Task<ActionResult<Module>> PostStaffFile(String class_code, String year)
+        public async Task<ActionResult> PostStaffFile(String class_code, String year)
         {
             if (!class_code.Equals("AB0") && !class_code.Equals("MU0") && !class_code.Equals("EX1"))
             {
                 return BadRequest("Campus class code must be one of {AB0,MU0,EX1}");
             }
 
-            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE module_staff RESTART IDENTITY CASCADE");
-            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE staff RESTART IDENTITY CASCADE");
+            /* Truncate all previous staff data */
+            await _repo.EmptyStaffData();
 
             var file = Request.Form.Files.First();
             StringBuilder content = new StringBuilder();
@@ -266,22 +266,22 @@ namespace ModuleRegistration.Controllers
                     try
                     {
                         /* Create the staff entity if it does not already exist */
-                        Staff staff = _context.Staff.Find(staff_id);
+                        Staff staff = _repo.Staff.Find(staff_id);
                         if (staff == null)
                         {
                             staff = new Staff();
                             staff.Uid = staff_id;
-                            _context.Add(staff);
+                            _repo.Add(staff);
                         }                        
 
                         /* If module already exists for the year associate staff to the module */
-                        var module = _context.Modules.First(m => m.Code.Equals(module_code) && m.Year.Equals(year) && m.ClassCode.Equals(class_code));
+                        var module = _repo.Modules.First(m => m.Code.Equals(module_code) && m.Year.Equals(year) && m.ClassCode.Equals(class_code));
 
                         /* Create association entity */
                         ModuleStaff ms = new ModuleStaff();
                         ms.Module = module;
                         ms.Staff = staff;
-                        _context.Add(ms);
+                        _repo.Add(ms);
                     }
                     catch (InvalidOperationException)
                     {
@@ -294,7 +294,7 @@ namespace ModuleRegistration.Controllers
                     staff_id = "";
                 }
             }
-            await _context.SaveChangesAsync();
+            await _repo.SaveChangesAsync();
             return Ok();
         }
 

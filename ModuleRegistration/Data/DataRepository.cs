@@ -210,5 +210,22 @@ namespace ModuleRegistration.Data
         {
             return await _context.Modules.Where(m => m.Year.Equals(year)).ToListAsync();
         }
+
+        public async Task EmptyModuleData()
+        {
+            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE module_student RESTART IDENTITY CASCADE");
+            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE module_staff RESTART IDENTITY CASCADE");
+            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE module RESTART IDENTITY CASCADE");
+        }
+        public async Task EmptyStudentData()
+        {
+            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE module_student RESTART IDENTITY CASCADE");
+            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE student RESTART IDENTITY CASCADE");
+        }
+        public async Task EmptyStaffData()
+        {
+            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE module_staff RESTART IDENTITY CASCADE");
+            _context.Database.ExecuteSqlCommand("TRUNCATE TABLE staff RESTART IDENTITY CASCADE");
+        }
     }
 }
