@@ -31,6 +31,8 @@ namespace ModuleRegistration.Data
         Task AddModulesAsync(List<Module> modules);
         Task AddModuleStudentAsync(List<ModuleStudent> moduleStudents);
         Task AddModuleStaffAsync(List<ModuleStaff> moduleStaff);
+        Task AddStudentsAsync(List<Student> students);
+        Task AddStaffAsync(List<Staff> staff);
 
         Task UpdateModuleAsync(Module module);
         Task UpdateStudentAsync(Student student);

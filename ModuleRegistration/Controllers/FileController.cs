@@ -231,6 +231,9 @@ namespace ModuleRegistration.Controllers
                 }
             }
 
+            /* Save student entities */
+            await _repo.AddStudentsAsync(studentsToAdd);
+
             /* Save module student entities */
             await _repo.AddModuleStudentAsync(moduleStudentToAdd);
 
@@ -294,41 +297,45 @@ namespace ModuleRegistration.Controllers
                     staff_id = splitCsv[i];
                 }
                 if (i % 4 == endCell)
-                {        
-                     
-                    if (!_repo.StaffExists(staff_id))
+                {
+                    Staff staff = null;
+                    if (!keySet.Contains(staff_id))
                     {
-                        if (!keySet.Contains(staff_id))
-                        {
-                            Staff staff = new Staff();
-                            staff.Uid = staff_id;
+                        staff = new Staff();
+                        staff.Uid = staff_id;
 
-                            staffToAdd.Add(staff);
-                            keySet.Add(staff_id);
+                        staffToAdd.Add(staff);
+                        keySet.Add(staff_id);
+                    }
+                    else
+                    {
+                        staff = staffToAdd.Find(s => s.Uid.Equals(staff_id));
+                    }
 
-                            /* Get module to associate student with */
-                            var module = await _repo.GetModuleAsync(module_code, year, class_code);
-                            if (module != null)
-                            {
-                                /* Create association entity */
-                                ModuleStaff ms = new ModuleStaff();
-                                ms.Module = module;
-                                ms.Staff = staff;
-                                moduleStaffToAdd.Add(ms);
-                            }
-                            else
-                            {
-                                /* Do nothing & log inaction because module is not known in database */
-                                object[] logParams = { module_code, year, staff_id };
-                                _logger.LogWarning("No module exists with code={0} for the year {1}, skipping CSV entry for staff with UID={2}.", logParams);
-                            }
-                        }
+                    /* Get module to associate student with */
+                    var module = await _repo.GetModuleAsync(module_code, year, class_code);
+                    if (module != null)
+                    {
+                        /* Create association entity */
+                        ModuleStaff ms = new ModuleStaff();
+                        ms.Module = module;
+                        ms.Staff = staff;
+                        moduleStaffToAdd.Add(ms);
+                    }
+                    else
+                    {
+                        /* Do nothing & log inaction because module is not known in database */
+                        object[] logParams = { module_code, year, staff_id };
+                        _logger.LogWarning("No module exists with code={0} for the year {1}, skipping CSV entry for staff with UID={2}.", logParams);
                     }
 
                     module_code = "";
                     staff_id = "";
                 }
             }
+
+            /* Save staff entities */
+            await _repo.AddStaffAsync(staffToAdd);
 
             /* Save module staff entities */
             await _repo.AddModuleStaffAsync(moduleStaffToAdd);

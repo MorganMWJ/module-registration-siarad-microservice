@@ -50,6 +50,18 @@ namespace ModuleRegistration.Data
             await _context.SaveChangesAsync();
         }
 
+        public async Task AddStudentsAsync(List<Student> students)
+        {
+            _context.Students.AddRange(students);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddStaffAsync(List<Staff> staff)
+        {
+            _context.Staff.AddRange(staff);
+            await _context.SaveChangesAsync();
+        }
+
         public async Task DeleteModuleAsync(Module module)
         {
             _context.Modules.Remove(module);
@@ -80,7 +92,7 @@ namespace ModuleRegistration.Data
         public async Task<Module> GetModuleAsync(string code, string year, string classCode)
         {
             var module = await _context.Modules.FirstOrDefaultAsync(m => m.Code.Equals(code) 
-            && m.Year.Equals(year) && m.Code.Equals(classCode));
+            && m.Year.Equals(year) && m.ClassCode.Equals(classCode));
             return module;
         }
 
