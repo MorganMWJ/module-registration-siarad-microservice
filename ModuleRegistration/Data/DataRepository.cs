@@ -116,7 +116,7 @@ namespace ModuleRegistration.Data
             return _context.Modules.Any(m => m.Code.Equals(code) && m.Year.Equals(year) && m.ClassCode.Equals(classCode));
         }
 
-        public async Task<List<Module>> ModulesByYearAndStudent(string year, string uid)
+        public async Task<List<Module>> ModulesByYearAndStudentAsync(string year, string uid)
         {
             /* collection to return */
             List<Module> moduleByYearForUser = new List<Module>();
@@ -135,7 +135,7 @@ namespace ModuleRegistration.Data
             return moduleByYearForUser;
         }
 
-        public async Task<List<Module>> ModulesByYearAndStaff(string year, string uid)
+        public async Task<List<Module>> ModulesByYearAndStaffAsync(string year, string uid)
         {
             /* collection to return */
             List<Module> moduleByYearForUser = new List<Module>();

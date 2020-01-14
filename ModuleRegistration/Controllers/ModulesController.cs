@@ -54,7 +54,7 @@ namespace ModuleRegistration.Controllers
          */
         // GET api/modules/year/{year}
         [HttpGet("year/{year}")]
-        public async Task<ActionResult<IEnumerable<Module>>> GetModulesByYear(String year)
+        public async Task<ActionResult<IEnumerable<Module>>> GetModulesByYear(string year)
         {
             /* Regular Expression to match year between 1900-2099 */
             string pattern = @"^(19|20)\d{2}$";
@@ -94,7 +94,7 @@ namespace ModuleRegistration.Controllers
          */
         // GET api/modules/{id}/staff
         [HttpGet("{id}/staff")]
-        public async Task<ActionResult<IEnumerable<Student>>> GetStaffByModule(int id)
+        public async Task<ActionResult<IEnumerable<Staff>>> GetStaffByModule(int id)
         {
             var module = await _repo.GetModuleAsync(id);
             if (module == null)
@@ -136,7 +136,7 @@ namespace ModuleRegistration.Controllers
          */
         // GET api/modules/year/{year}/{uid}
         [HttpGet("year/{year}/{uid}")]
-        public async Task<ActionResult<IEnumerable<Module>>> GetModulesByYearAndUser(String year, String uid)
+        public async Task<ActionResult<IEnumerable<Module>>> GetModulesByYearAndUser(string year, string uid)
         {
             if (year == null || uid == null)
             {
@@ -146,11 +146,11 @@ namespace ModuleRegistration.Controllers
             IEnumerable<Module> modules = new List<Module>();
             if (_repo.StaffExists(uid))
             {
-                modules = await _repo.ModulesByYearAndStaff(year, uid);
+                modules = await _repo.ModulesByYearAndStaffAsync(year, uid);
             }
             else if (_repo.StudentExists(uid))
             {
-                modules = await _repo.ModulesByYearAndStudent(year, uid);
+                modules = await _repo.ModulesByYearAndStudentAsync(year, uid);
             }
             else
             {
@@ -165,7 +165,7 @@ namespace ModuleRegistration.Controllers
          */
          //Get api/modules/year/{year}/code/{code}
         [HttpGet("year/{year}/code/{code}")]
-        public async Task<ActionResult<Module>> GetModulesByYearAndCode(String year, String code)
+        public async Task<ActionResult<Module>> GetModulesByYearAndCode(string year, string code)
         {
             if (year == null || code == null)
             {
