@@ -32,7 +32,7 @@ namespace ModuleRegistration.Controllers
          */
         //POST api/data/modules
         [HttpPost("modules")]
-        public async Task<ActionResult> PostModuleFile(IFormFile test)
+        public async Task<ActionResult> PostModuleFile()
         {
             /* Truncate all previous module data */
             await _repo.EmptyModuleData();
