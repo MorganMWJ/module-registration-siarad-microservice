@@ -238,6 +238,9 @@ namespace ModuleRegistration.Controllers
             }
             try
             {
+                /* if modules has student children, delete them */
+                /* if modules has staff children delete them */
+
                 await _repo.DeleteModuleAsync(module);
             }
             catch (DbUpdateConcurrencyException)

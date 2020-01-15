@@ -15,10 +15,12 @@ namespace ModuleRegistration.Models
         [Column("id")]
         public int Id { get; set; }
 
-        [Column("module_id")]
+        [Required]
+        [Column("module_id")]        
         public Module Module { get; set; }
 
-        [Column("uid")]
+        [Required]
+        [Column("uid")]        
         public Student Student { get; set; }
     }
 }

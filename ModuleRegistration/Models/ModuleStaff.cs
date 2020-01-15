@@ -15,9 +15,11 @@ namespace ModuleRegistration.Models
         [Column("id")]
         public int Id { get; set; }
 
+        [Required]
         [Column("module_id")]
         public Module Module { get; set; }
 
+        [Required]
         [Column("uid")]
         public Staff Staff { get; set; }
     }

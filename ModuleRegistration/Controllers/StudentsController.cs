@@ -47,9 +47,9 @@ namespace ModuleRegistration.Controllers
         [HttpDelete("{uid}")]
         public async Task<ActionResult> DeleteStudent(string uid)
         {
-            if (_repo.StudentExists(uid))
+            if (!_repo.StudentExists(uid))
             {
-                return BadRequest();
+                return NotFound();
             }
             await _repo.DeleteStudentAsync(uid);
             return Ok();
