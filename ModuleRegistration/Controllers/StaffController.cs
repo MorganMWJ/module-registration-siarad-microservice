@@ -43,5 +43,76 @@ namespace ModuleRegistration.Controllers
             }
             return Ok(uids);
         }
+
+
+        //api/staff/{uid}
+        [HttpDelete("{uid}")]
+        public async Task<ActionResult> DeleteStaff(string uid)
+        {
+            if (_repo.StaffExists(uid))
+            {
+                return BadRequest();
+            }
+            await _repo.DeleteStaffAsync(uid);
+            return Ok();
+        }
+        //api/staff
+        [HttpPost]
+        public async Task<ActionResult> PostStaff([FromBody]Staff staff)
+        {
+            if (_repo.StaffExists(staff.Uid))
+            {
+                return BadRequest();
+            }
+            await _repo.AddStaffAsync(staff);
+            return Ok();
+        }
+        //api/staff
+        [HttpDelete]
+        public async Task<ActionResult> DeleteStaff()
+        {
+            await _repo.DeleteAllStaffAsync();
+            return Ok();
+        }
+
+        //api/staff/{uid}/{mid}
+        [HttpGet("{uid}/{mid}")]
+        public async Task<ActionResult> GetStaffModuleLink(string uid, int mid)
+        {
+            await _repo.GetModuleStudentAsync(mid, uid);
+            return Ok();
+        }
+
+        //api/staff/{uid}/{mid]
+        [HttpPost("{uid}/{mid}")]
+        public async Task<ActionResult> AddStaffModuleLink(string uid, int mid)
+        {
+            var staff = await _repo.GetStaffAsync(uid);
+            var module = await _repo.GetModuleAsync(mid);
+            if (staff == null || module == null)
+            {
+                return NotFound();
+            }
+            var moduleStudent = new ModuleStaff
+            {
+                Module = module,
+                Staff = staff
+            };
+            await _repo.AddModuleStaffAsync(moduleStudent);
+            return Ok();
+        }
+
+        //api/staff/{uid}/{mid}
+        [HttpDelete("{uid}/{mid}")]
+        public async Task<ActionResult> DeleteStaffModuleLink(string uid, int mid)
+        {
+            var staffModuleLink = await _repo.GetModuleStaffAsync(mid, uid);
+            if (staffModuleLink == null)
+            {
+                return NotFound();
+            }
+            await _repo.DeleteModuleStaffAsync(staffModuleLink.Id);
+            return Ok();
+        }
     }
 }

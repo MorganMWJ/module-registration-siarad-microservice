@@ -13,6 +13,8 @@ namespace ModuleRegistration.Data
         Task<Module> GetModuleAsync(string code, string year, string classCode);
         Task<Student> GetStudentAsync(string uid);
         Task<Staff> GetStaffAsync(string uid);
+        Task<ModuleStudent> GetModuleStudentAsync(int id, string uid);
+        Task<ModuleStaff> GetModuleStaffAsync(int id, string uid);
 
         Task<List<Module>> ModuleListAsync();
         Task<List<Module>> ModulesByStudentListAsync(string uid);
@@ -30,7 +32,9 @@ namespace ModuleRegistration.Data
         Task AddStaffAsync(Staff staff);
 
         Task AddModulesAsync(List<Module> modules);
+        Task AddModuleStudentAsync(ModuleStudent moduleStudents);
         Task AddModuleStudentAsync(List<ModuleStudent> moduleStudents);
+        Task AddModuleStaffAsync(ModuleStaff moduleStaff);
         Task AddModuleStaffAsync(List<ModuleStaff> moduleStaff);
         Task AddStudentsAsync(List<Student> students);
         Task AddStaffAsync(List<Staff> staff);
@@ -42,6 +46,11 @@ namespace ModuleRegistration.Data
         Task DeleteModuleAsync(Module module);
         Task DeleteStudentAsync(string uid);
         Task DeleteStaffAsync(string uid);
+        Task DeleteModuleStudentsAsync(int id);
+        Task DeleteModuleStaffAsync(int id);
+
+        Task DeleteAllStudentAsync();
+        Task DeleteAllStaffAsync();
 
         bool ModuleExists(int id);
         bool ModuleExists(string code, string year, string classCode);

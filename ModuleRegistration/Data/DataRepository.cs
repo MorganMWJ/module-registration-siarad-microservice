@@ -22,14 +22,16 @@ namespace ModuleRegistration.Data
             await _context.SaveChangesAsync();
         }
 
-        public Task AddStaffAsync(Staff staff)
+        public async Task AddStaffAsync(Staff staff)
         {
-            throw new NotImplementedException();
+            _context.Add(staff);
+            await _context.SaveChangesAsync();
         }
 
-        public Task AddStudentAsync(Student student)
+        public async Task AddStudentAsync(Student student)
         {
-            throw new NotImplementedException();
+            _context.Add(student);
+            await _context.SaveChangesAsync();
         }
 
         public async Task AddModulesAsync(List<Module> modules)
@@ -43,10 +45,20 @@ namespace ModuleRegistration.Data
             _context.ModuleStudents.AddRange(moduleStudents);
             await _context.SaveChangesAsync();
         }
+        public async Task AddModuleStudentAsync(ModuleStudent moduleStudents)
+        {
+            _context.ModuleStudents.Add(moduleStudents);
+            await _context.SaveChangesAsync();
+        }
 
         public async Task AddModuleStaffAsync(List<ModuleStaff> moduleStaff)
         {
             _context.ModuleStaff.AddRange(moduleStaff);
+            await _context.SaveChangesAsync();
+        }
+        public async Task AddModuleStaffAsync(ModuleStaff moduleStaff)
+        {
+            _context.ModuleStaff.Add(moduleStaff);
             await _context.SaveChangesAsync();
         }
 
@@ -68,14 +80,31 @@ namespace ModuleRegistration.Data
             await _context.SaveChangesAsync();
         }
 
-        public Task DeleteStaffAsync(string uid)
+        public async Task DeleteStaffAsync(string uid)
         {
-            throw new NotImplementedException();
+            if (StaffExists(uid))
+            {
+                _context.Staff.Remove(await _context.Staff.FindAsync(uid));
+                await _context.SaveChangesAsync();
+            }
+        }
+        public async Task DeleteAllStaffAsync()
+        {
+            _context.Staff.RemoveRange(await StaffListAsync());
         }
 
-        public Task DeleteStudentAsync(string uid)
+        public async Task DeleteStudentAsync(string uid)
         {
-            throw new NotImplementedException();
+            if (StudentExists(uid))
+            {
+                _context.Students.Remove(await _context.Students.FindAsync(uid));
+                await _context.SaveChangesAsync();
+            }
+        }
+        
+        public async Task DeleteAllStudentAsync()
+        {
+            _context.Students.RemoveRange(await StudentListAsync());
         }
 
         public async Task<Module> GetModuleAsync(int id)
@@ -104,6 +133,25 @@ namespace ModuleRegistration.Data
         public async Task<Student> GetStudentAsync(string uid)
         {
             return await _context.Students.FirstOrDefaultAsync(s => s.Uid.Equals(uid));
+        }
+        public async Task<ModuleStudent> GetModuleStudentAsync(int id, string uid)
+        {
+            return await _context.ModuleStudents.FirstOrDefaultAsync(m => m.Module.Id.Equals(id) && m.Student.Uid.Equals(uid));
+        }
+        public async Task<ModuleStaff> GetModuleStaffAsync(int id, string uid)
+        {
+            return await _context.ModuleStaff.FirstOrDefaultAsync(m => m.Module.Id.Equals(id) && m.Staff.Uid.Equals(uid));
+        }
+        public async Task DeleteModuleStaffAsync(int id)
+        {
+                _context.ModuleStaff.Remove(await _context.ModuleStaff.FindAsync(id));
+                await _context.SaveChangesAsync();
+        }
+
+        public async Task DeleteModuleStudentsAsync(int id)
+        {
+            _context.ModuleStudents.Remove(await _context.ModuleStudents.FindAsync(id));
+            await _context.SaveChangesAsync();
         }
 
         public bool ModuleExists(int id)

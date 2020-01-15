@@ -134,10 +134,7 @@ namespace ModuleRegistration.Controllers
             if (!class_code.Equals("AB0") && !class_code.Equals("MU0") && !class_code.Equals("EX1"))
             {
                 return BadRequest("Campus class code must be one of {AB0,MU0,EX1}");
-            }
-
-            /* Truncate all previous student data */
-            await _repo.EmptyStudentData();
+            }  
             
             /**/
             var file = Request.Form.Files.First();
