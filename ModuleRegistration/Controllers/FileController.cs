@@ -191,14 +191,16 @@ namespace ModuleRegistration.Controllers
                     String[] nameSplit = name.Split(',');
                     nameSplit[nameSplit.Length - 1] = nameSplit[nameSplit.Length - 1].Remove(0, 1);
 
+                    Student student = new Student();
+                    student.Uid = user_id;
+                    student.Forename = nameSplit[nameSplit.Length - 1];
+                    student.Surname = nameSplit[0];
+
                     if (!_repo.StudentExists(user_id))
                     {
                         if (!keySet.Contains(user_id))
                         {
-                            Student student = new Student();
-                            student.Uid = user_id;
-                            student.Forename = nameSplit[nameSplit.Length - 1];
-                            student.Surname = nameSplit[0];
+                            
 
                             studentsToAdd.Add(student);
                             keySet.Add(user_id);
@@ -219,6 +221,16 @@ namespace ModuleRegistration.Controllers
                                 _logger.LogWarning("No module exists with code={0} for the year {1}, skipping CSV entry for student with UID={2}.", logParams);
                             }
                         }
+                        else
+                        {
+                            var module = await _repo.GetModuleAsync(module_code, year, class_code);
+                            if (module != null)
+                            {
+                                ModuleStudent ms = new ModuleStudent();
+                                ms.Module = module;
+                                ms.Student = student;
+                                moduleStudentToAdd.Add(ms);
+                            }
                     }
 
                     module_code = "";
