@@ -134,11 +134,11 @@ namespace ModuleRegistration.Controllers
             if (!class_code.Equals("AB0") && !class_code.Equals("MU0") && !class_code.Equals("EX1"))
             {
                 return BadRequest("Campus class code must be one of {AB0,MU0,EX1}");
-            }  
-            
+            }
+
             /**/
             var file = Request.Form.Files.First();
-            StringBuilder content = new StringBuilder();            
+            StringBuilder content = new StringBuilder();
             StreamReader sr = new StreamReader(file.OpenReadStream());
             while (!sr.EndOfStream)
             {
@@ -151,7 +151,7 @@ namespace ModuleRegistration.Controllers
                 }
             }
 
-            /* Key set to avoid duplicates in file */            
+            /* Key set to avoid duplicates in file */
             List<String> keySet = new List<String>();
 
             /* students list to build up */
@@ -200,14 +200,14 @@ namespace ModuleRegistration.Controllers
                     {
                         if (!keySet.Contains(user_id))
                         {
-                            
+
 
                             studentsToAdd.Add(student);
                             keySet.Add(user_id);
 
                             /* Get module to associate student with */
                             var module = await _repo.GetModuleAsync(module_code, year, class_code);
-                            if(module != null)
+                            if (module != null)
                             {
                                 ModuleStudent ms = new ModuleStudent();
                                 ms.Module = module;
@@ -231,22 +231,22 @@ namespace ModuleRegistration.Controllers
                                 ms.Student = student;
                                 moduleStudentToAdd.Add(ms);
                             }
-                    }
+                        }
 
-                    module_code = "";
-                    year = "";
-                    user_id = "";
-                    name = "";
+                        module_code = "";
+                        year = "";
+                        user_id = "";
+                        name = "";
+                    }
                 }
             }
+                /* Save student entities */
+                await _repo.AddStudentsAsync(studentsToAdd);
 
-            /* Save student entities */
-            await _repo.AddStudentsAsync(studentsToAdd);
+                /* Save module student entities */
+                await _repo.AddModuleStudentAsync(moduleStudentToAdd);
 
-            /* Save module student entities */
-            await _repo.AddModuleStudentAsync(moduleStudentToAdd);
-
-            return Ok();
+                return Ok();
         }
 
         /**
