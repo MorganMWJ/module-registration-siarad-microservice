@@ -221,17 +221,21 @@ namespace ModuleRegistration.Controllers
                                 _logger.LogWarning("No module exists with code={0} for the year {1}, skipping CSV entry for student with UID={2}.", logParams);
                             }
                         }
-                        else
+                    }
+                    else
+                    {
+                        var module = await _repo.GetModuleAsync(module_code, year, class_code);
+                        if (module != null)
                         {
-                            var module = await _repo.GetModuleAsync(module_code, year, class_code);
-                            if (module != null)
+                            ModuleStudent ms = new ModuleStudent();
+                            ms.Module = module;
+                            ms.Student = await _repo.GetStudentAsync(user_id);
+                            if (await _repo.GetModuleStudentAsync(module.Id, student.Uid) == null)
                             {
-                                ModuleStudent ms = new ModuleStudent();
-                                ms.Module = module;
-                                ms.Student = student;
                                 moduleStudentToAdd.Add(ms);
                             }
                         }
+                    }
 
                         module_code = "";
                         year = "";
@@ -239,9 +243,9 @@ namespace ModuleRegistration.Controllers
                         name = "";
                     }
                 }
-            }
                 /* Save student entities */
                 await _repo.AddStudentsAsync(studentsToAdd);
+
 
                 /* Save module student entities */
                 await _repo.AddModuleStudentAsync(moduleStudentToAdd);
