@@ -67,6 +67,31 @@ namespace ModuleRegistration.Controllers
             await _repo.AddStaffAsync(staff);
             return Ok();
         }
+        //api/staff/{uid}
+        [HttpPut("uid")]
+        public async Task<ActionResult> UpdateStaff(string uid, [FromBody] Staff staff)
+        {
+            if (!uid.Equals(staff.Uid))
+            {
+                return BadRequest();
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _repo.UpdateStaffAsync(staff);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_repo.StaffExists(staff.Uid))
+                    {
+                        return BadRequest();
+                    }
+                    throw;
+                }
+            }
+            return Ok();
+        }
         //api/staff
         [HttpDelete]
         public async Task<ActionResult> DeleteStaff()

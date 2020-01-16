@@ -304,14 +304,16 @@ namespace ModuleRegistration.Data
             await _context.SaveChangesAsync();
         }
 
-        public Task UpdateStaffAsync(Staff staff)
+        public async Task UpdateStaffAsync(Staff staff)
         {
-            throw new NotImplementedException();
+            _context.Update(staff);
+            await _context.SaveChangesAsync();
         }
 
-        public Task UpdateStudentAsync(Student student)
+        public async Task UpdateStudentAsync(Student student)
         {
-            throw new NotImplementedException();
+            _context.Update(student);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<List<Module>> ModulesByYearListAsync(string year)

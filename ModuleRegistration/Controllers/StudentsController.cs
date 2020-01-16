@@ -44,6 +44,31 @@ namespace ModuleRegistration.Controllers
             return Ok(uids);
         }
         //api/students/{uid}
+        [HttpPut("uid")]
+        public async Task<ActionResult> UpdateStudent(string uid, [FromBody] Student student)
+        {
+            if (!uid.Equals(student.Uid))
+            {
+                return BadRequest();
+            }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _repo.UpdateStudentAsync(student);
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_repo.StudentExists(student.Uid))
+                    {
+                        return BadRequest();
+                    }
+                    throw;
+                }
+            }
+            return Ok();
+        }
+        //api/students/{uid}
         [HttpDelete("{uid}")]
         public async Task<ActionResult> DeleteStudent(string uid)
         {
