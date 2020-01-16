@@ -68,7 +68,7 @@ namespace ModuleRegistration.Controllers
             return Ok();
         }
         //api/staff/{uid}
-        [HttpPut("uid")]
+        [HttpPut("{uid}")]
         public async Task<ActionResult> UpdateStaff(string uid, [FromBody] Staff staff)
         {
             if (!uid.Equals(staff.Uid))

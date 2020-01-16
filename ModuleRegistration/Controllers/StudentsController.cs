@@ -44,7 +44,7 @@ namespace ModuleRegistration.Controllers
             return Ok(uids);
         }
         //api/students/{uid}
-        [HttpPut("uid")]
+        [HttpPut("{uid}")]
         public async Task<ActionResult> UpdateStudent(string uid, [FromBody] Student student)
         {
             if (!uid.Equals(student.Uid))
